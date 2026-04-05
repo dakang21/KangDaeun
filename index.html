@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="keywords" content="Phidia Kang, artist, Detroit, Seoul, Sculptor">
-  <title></title>
+  <title>Phidia Kang - Works</title>
 
   <style>
     /* 전체 기본 설정: 미니멀한 폰트와 배경색 */
@@ -47,7 +47,7 @@
 
     /* 좌측 하단 작품 목록 리스트 스타일 */
     .menu-title {
-      margin-bottom: 8px; /* 선과 타이틀 사이의 여백 살짝 조절 */
+      margin-bottom: 8px;
       font-weight: bold;
     }
 
@@ -55,19 +55,18 @@
       list-style: none;
       padding: 0;
       margin: 0 0 20px 0;
-      border-left: 1px solid #333; /* 사진처럼 왼쪽에 얇고 정갈한 선 추가 */
-      padding-left: 12px; /* 선과 텍스트 사이의 간격 */
+      border-left: 1px solid #333;
+      padding-left: 12px;
     }
 
     .work-list li {
       margin-bottom: 4px;
     }
 
-    /* 중앙 작품 배치 영역 */
+    /* 중앙 작품 배치 영역 - 왼쪽 메뉴 공간만 남기고 넓게 사용 */
     .main-content {
-      max-width: 800px;
-      margin: 60px auto 100px auto;
-      padding: 0 150px;
+      margin: 60px 20px 100px 150px; /* 위 60px, 오른쪽 20px, 아래 100px, 왼쪽 150px(메뉴용 마진) */
+      max-width: 1200px; /* 사진이 너무 무한정 커지는 것을 방지 (원하면 none으로 변경 가능) */
     }
 
     /* 개별 작품 컨테이너 */
@@ -80,6 +79,12 @@
       height: auto;
       display: block;
       margin-bottom: 15px;
+      cursor: zoom-in; /* 클릭하면 커진다는 것을 암시하는 마우스 커서 */
+      transition: opacity 0.2s ease;
+    }
+
+    .artwork img:hover {
+      opacity: 0.95;
     }
 
     .caption {
@@ -89,6 +94,22 @@
 
     .caption i {
       font-style: italic;
+    }
+
+    /* 자바스크립트로 제어할 전체화면 클래스 */
+    .img-fullscreen {
+      position: fixed !important;
+      top: 0 !important;
+      left: 0 !important;
+      width: 100vw !important;
+      height: 100vh !important;
+      object-fit: contain !important; /* 이미지 비율 유지하며 꽉 차게 */
+      background-color: white !important;
+      z-index: 9999 !important;
+      margin: 0 !important;
+      padding: 40px !important; /* 꽉 찼을 때 약간의 상하좌우 여백 */
+      box-sizing: border-box !important;
+      cursor: zoom-out !important;
     }
   </style>
 </head>
@@ -167,27 +188,27 @@
 
     <div class="artwork" id="shelved-bouquet">
       <img src="kang_librarian's bouquet.jpg" alt="Shelved Bouquet">
-      <div class="caption" style="margin-bottom: 90%;">
+      <div class="caption" style="margin-bottom: 90px;">
         5. <i>Shelved Bouquet</i> (2023), Douglas Fir, Oak, Plywood, Glue, and Pigments, 56"x 43"x 51"
       </div>
 
       <img src="kang_lowsteadybloom.jpg" alt="Low Steady Bloom">
-      <div class="caption" style="margin-bottom: 90%;">
+      <div class="caption" style="margin-bottom: 90px;">
         4. <i>Low Steady Bloom</i> (2023), Douglas Fir, Plywood, Oak, Mesh Wire, and Glue, 15"x 16"x 22"
       </div>
 
       <img src="Daeun_Kang_Flat Footed.jpg" alt="Flat Footed">
-      <div class="caption" style="margin-bottom: 90%;">
+      <div class="caption" style="margin-bottom: 90px;">
         3. <i>Flat Footed</i> (2022), Douglas Fir, Plywood, Clay, Mesh Wire and Gap Filler, 20"x 30"x 44"
       </div>
 
       <img src="Things will Turn Around.jpg" alt="Things Will Turn Around">
-      <div class="caption" style="margin-bottom: 90%;">
+      <div class="caption" style="margin-bottom: 90px;">
         2. <i>Things Will Turn Around</i> (2022), Installation Iteration, Dimension Variable
       </div>
 
       <img src="Daeun_Kang_FoldingLungs.jpg" alt="Folding Lungs">
-      <div class="caption" style="margin-bottom: 90%;">
+      <div class="caption" style="margin-bottom: 90px;">
         1. <i>Folding Lungs</i> (2022), Douglas Fir, Plywood, and Glue, 48"x 48"x 9"
       </div>
     </div>
@@ -200,6 +221,48 @@
     </div>
 
   </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const images = document.querySelectorAll('.artwork img');
+      let currentFullscreenImg = null;
+
+      // 1. 이미지를 클릭했을 때 꽉 찬 화면으로 만들기
+      images.forEach(img => {
+        img.addEventListener('click', function(e) {
+          e.stopPropagation(); // 배경 클릭 이벤트와 겹치지 않게 방지
+          
+          if (currentFullscreenImg) {
+            currentFullscreenImg.classList.remove('img-fullscreen');
+          }
+          
+          // 이미 꽉 찬 상태에서 클릭하면 원래대로, 아니면 꽉 차게
+          if (this !== currentFullscreenImg) {
+            this.classList.add('img-fullscreen');
+            currentFullscreenImg = this;
+          } else {
+            currentFullscreenImg = null;
+          }
+        });
+      });
+
+      // 2. 스크롤을 내리거나 올리면 즉시 원래대로 돌아오기
+      window.addEventListener('scroll', () => {
+        if (currentFullscreenImg) {
+          currentFullscreenImg.classList.remove('img-fullscreen');
+          currentFullscreenImg = null;
+        }
+      });
+
+      // 3. 사진 외의 여백을 클릭해도 원래대로 돌아오기
+      document.addEventListener('click', () => {
+        if (currentFullscreenImg) {
+          currentFullscreenImg.classList.remove('img-fullscreen');
+          currentFullscreenImg = null;
+        }
+      });
+    });
+  </script>
 
 </body>
 </html>
